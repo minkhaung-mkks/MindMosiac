@@ -1,0 +1,61 @@
+.profile_page{
+    display: flex;
+    flex-direction: column;
+    width: 90vw;
+    border: 1px solid black;
+    max-width: 720px;
+    padding: 2vh 2vw; 
+    gap: 0vh;
+    margin: 0 auto;
+    margin-top: 15vh;
+    
+}
+
+.friends_box{
+    display: flex;
+    margin-top: 10px;
+}
+
+.friend_bubble{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.friend_bubble img{
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    border: 1px solid black;
+}
+
+.line{
+    width: 100%;
+    height: 1px;
+    margin: 2vh auto;
+    background-color: black;
+}
+
+.profile_page h3{
+    margin: 0;
+}
+
+.profile_labels{
+    display: flex;
+    flex-direction: column;
+}
+
+.profile_label_box{
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+}
+
+.profile_labels input{
+    padding: 1vh 0.5vw;
+    background-color: white;
+    border: 1px solid black;
+    outline: none;
+    color: black;
+    margin-top: 10px;
+}

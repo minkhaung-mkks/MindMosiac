@@ -1,0 +1,89 @@
+.nav_bar_bottom {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  justify-content: center;
+  height: 6vh;
+  align-items: center;
+  border: 1px solid black;
+  padding: 2vh 0vw;
+  background-color: white;
+}
+
+.nav_bar_bottom_links {
+  display: flex;
+  width: 80vw;
+  justify-content: space-between;
+  height: 6vh;
+  align-items: center;
+  padding: 2vh 0vw;
+}
+
+.nav_bar_bottom a {
+display: flex;
+align-items: center;
+  width: 50px;
+  height: 10vh;
+  padding: 0 3vw;
+  transition: 0.5s ease all;
+}
+
+.nav_bar_bottom a svg {
+  stroke: black;
+  stroke-width: 0.5;
+}
+
+.add_button {
+  margin-bottom: 8vh;
+  border: 1px solid black;
+  background-color: white;
+  padding: 0.5vh 2vw;
+  padding-top: 1vh;
+  border-radius: 10px;
+}
+
+.header_nav_bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 90vw;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1vh 5vw;
+  border-bottom: 1px solid black;
+  background-color: white;
+  z-index: 99;
+}
+
+.header_nav_bar a {
+  width: 40px;
+
+}
+
+.header_nav_bar a svg {
+  stroke: black;
+  stroke-width: 0.5;
+}
+
+.logoTxt {
+  color: black;
+  font-size: 3rem;
+  font-weight: bold;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.logoTxt:hover {
+  color: black;
+}
+
+.nav_bar_bottom_links a:hover {
+  background-color: rgb(124, 80, 196);
+  transition: 0.5s ease all;
+}
+
+.nav_bar_bottom_links a:hover svg {
+  stroke: white;
+
+}

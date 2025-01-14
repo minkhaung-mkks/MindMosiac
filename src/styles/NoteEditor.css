@@ -1,0 +1,29 @@
+.editor_box{
+    padding: 2vh 2vw;
+}
+
+.note_editor{
+    width: 80vw;
+    margin: 2vh auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+}
+
+.note_title {
+    padding: 2vh 1vw;
+    font-size: 2rem;
+}
+
+.save_button{
+    display: flex;
+    gap: 10px;
+    position: fixed;
+    top: 2%;
+    right: 3%;
+    z-index: 99;
+    padding: 2vh 3vw;
+}
+.save_button svg{
+    width: 20px;
+}
