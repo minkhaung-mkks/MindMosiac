@@ -3,7 +3,7 @@ import { useUserStore } from '../store'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';  // Make sure the CSS is imported
-
+import '../styles/login.css'
 
 const LoginPage = () => {
   const [nickname, setNickname] = useState('')
@@ -25,16 +25,20 @@ const LoginPage = () => {
   }
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className='login_page'>
+      <h1 className='titleLogoTxt'>MindMosiac</h1>
+      <div className="line"></div>
+      <h3>Enter your demo nickname</h3>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <input
+      className='login_nn'
         type="text"
         placeholder="Enter your nickname"
         value={nickname}
         onChange={(e) => setNickname(e.target.value)}
       />
-      <button onClick={handleLogin}>Login</button>
+      <div className="line"></div>
+      <button className='login_btn' onClick={handleLogin}>Login</button>
     </div>
   )
 }
