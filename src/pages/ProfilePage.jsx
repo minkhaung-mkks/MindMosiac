@@ -43,7 +43,7 @@ const ProfilePage = () => {
     // Update the user in the Zustand store and localStorage
     const updatedUser = { ...user, nickname, email };
     setUser(updatedUser); // Update the Zustand store
-    localStorage.setItem("user", JSON.stringify(updatedUser)); // Save to localStorage
+    localStorage.setItem("user-storage", JSON.stringify(updatedUser)); // Save to localStorage
 
     // Optionally send to the backend to update the user profile
     axios
@@ -63,7 +63,7 @@ const ProfilePage = () => {
 
   const handleLogout = () => {
     logout(); // Clear the user session from Zustand store
-    localStorage.removeItem("user"); // Remove from localStorage
+    localStorage.removeItem("user-storage"); // Remove from localStorage
     toast.info("Logged out successfully!", {
       position: toast.POSITION.TOP_RIGHT,
     });

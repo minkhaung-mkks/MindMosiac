@@ -1,16 +1,19 @@
 // src/components/Layout.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useUserStore } from "../store";
 import "../styles/layout.css";
 
 const Layout = ({ children }) => {
   const { user, logout } = useUserStore();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
-    localStorage.removeItem("user");
+    localStorage.removeItem("user-storage");
   };
+
+  const isActive = (path) => location.pathname === path ? "activeURL" : "";
 
   return (
     <div>
@@ -39,8 +42,7 @@ const Layout = ({ children }) => {
       <div>{children}</div>
       <div className="nav_bar_bottom">
         <div className="nav_bar_bottom_links">
-          <Link to={"/"}>
-            {" "}
+          <Link to={"/"} className={isActive("/")}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -56,7 +58,7 @@ const Layout = ({ children }) => {
               />
             </svg>
           </Link>
-          <Link to={"/"}>
+          <Link to={"/"} className={"locked-link"}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -72,7 +74,7 @@ const Layout = ({ children }) => {
               />
             </svg>
           </Link>
-          <Link to={"/write"} className="add_button">
+          <Link to={"/write"} className={`add_button ${isActive("/write")}`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -88,7 +90,7 @@ const Layout = ({ children }) => {
               />
             </svg>
           </Link>
-          <Link to={"/community"}>
+          <Link to={"/community"} className={isActive("/community")}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -104,7 +106,7 @@ const Layout = ({ children }) => {
               />
             </svg>
           </Link>
-          <Link to={"/profile/" + user.id}>
+          <Link to={`/profile/${user.id}`} className={isActive(`/profile/${user.id}`)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

@@ -87,3 +87,29 @@ align-items: center;
   stroke: white;
 
 }
+.activeURL{
+  background-color: rgb(124, 80, 196);
+}
+.activeURL svg{
+  stroke: white !important;
+}
+.locked-link{
+  pointer-events: none;
+  background-color: rgb(202, 202, 202);
+}
+
+.locked-link svg{
+  stroke: grey !important;
+}
+
+@media only screen and (max-width: 600px) {
+  .header_nav_bar{
+    height: 8vh;
+  }
+  .nav_bar_bottom_links{
+      width: 95vw;
+  }
+  .logoTxt{
+    font-size: 2rem;
+  }
+}

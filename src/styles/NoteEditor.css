@@ -27,3 +27,8 @@
 .save_button svg{
     width: 20px;
 }
+@media only screen and (max-width: 600px) {
+    .note_editor{
+        width: 90vw;
+    }
+}

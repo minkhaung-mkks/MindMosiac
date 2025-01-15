@@ -1,64 +1,92 @@
-.note_header{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 80vw;
-    padding: 2vh 10vw;
-    border-bottom: 1px solid black;
+.note_header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80vw;
+  padding: 2vh 10vw;
+  border-bottom: 1px solid black;
 }
 
-.note_header h2{
-    margin: 0;
-    margin-right: auto;
+.note_header h2 {
+  margin: 0;
+  margin-right: auto;
 }
 
-.note_header input{
-    padding: 1vh 1vw;
-    width: 40vw;
-    border-radius: 3px;
-    background-color: white;
-    outline: none;
-    border: 1px solid black;
-    color: black;
-    margin-left: 9%;
+.note_header input {
+  padding: 1vh 1vw;
+  width: 40vw;
+  border-radius: 3px;
+  background-color: white;
+  outline: none;
+  border: 1px solid black;
+  color: black;
+  margin-left: 9%;
 }
 
-.sort_by{
-    margin-left: auto;
-    width: 10vw;
+.sort_by {
+  margin-left: auto;
+  width: 10vw;
 }
 
-.note_card{
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid black;
-    padding: 2vh 2vw;
+.note_card {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid black;
+  padding: 2vh 2vw;
 }
 
-.buttons_side{
-    margin-left: auto;
-    margin-right: 5%;
-    display: flex;
-    align-items: center;
-    gap: 20px;
+.buttons_side {
+  margin-left: auto;
+  margin-right: 5%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-.buttons_side button{
-    width: 75px;
+.buttons_side button {
+  width: 75px;
+  background-color: transparent;
+}
+
+.buttons_side button svg {
+  stroke: black;
+  stroke-width: 0.5px;
+}
+
+.buttons_side button:hover {
+  background-color: rgb(124, 80, 196);
+  outline: rgb(124, 80, 196);
+  border: none;
+}
+
+.buttons_side button:hover svg {
+  stroke: white;
+}
+
+@media only screen and (max-width: 600px) {
+    .buttons_side{
+        gap: 5px;
+    }
+  .buttons_side button {
+    width: 50px;
     background-color: transparent;
-}
+  }
+  .right_side h2{
+    font-size: 1rem;
+  }
+  .right_side p{
+    font-size: 0.6rem;
+  }
+  .buttons_side button svg {
+    width: 25px;
+  }
+  .note_header{
+    width: 94vw;
+    padding: 2vh 3vw;
+    padding-top: 3vh;
+  }
+  .note_header input{
 
-.buttons_side button svg{
-    stroke: black;
-    stroke-width: 0.5px;
-}
-
-.buttons_side button:hover{
-    background-color: rgb(124, 80, 196);
-    outline: rgb(124, 80, 196);
-    border: none;
-}
-
-.buttons_side button:hover svg{
-    stroke: white;
+    margin-left: 0;
+  }
 }
