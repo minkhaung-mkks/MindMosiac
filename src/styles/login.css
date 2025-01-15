@@ -5,10 +5,10 @@
     align-items: center;
     width: 80vw;
     margin: 0 auto;
-    max-width: 600px;
+    max-width: 400px;
     padding: 2vh 2vw;
     border: 1px solid black;
-    min-height: 80vh;
+    min-height: 65vh;
     border-radius: 10px;
 }
 
@@ -20,11 +20,11 @@
     outline: none;
     border: 1px solid rgb(111, 111, 111);
     border-radius: 5px;
-    max-width: 400px;
+    max-width: 300px;
 }
 
 .login_btn{
     width: 55vw;
-    max-width: 400px;
+    max-width: 360px;
     padding: 2vh 2vw;
 }
