@@ -13,16 +13,18 @@
 }
 
 .login_nn{
-    padding: 1vh 2vw;
+    padding: 2vh 2vw;
     width: 50vw;
     background-color: white;
     color: black;
     outline: none;
     border: 1px solid rgb(111, 111, 111);
     border-radius: 5px;
+    max-width: 400px;
 }
 
 .login_btn{
     width: 55vw;
-    padding: 1vh 2vw;
+    max-width: 400px;
+    padding: 2vh 2vw;
 }
