@@ -1,38 +1,85 @@
-// src/pages/NotesPage.jsx
 import React, { useState, useEffect } from "react";
 import { useUserStore } from "../store";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
+import { jsPDF } from "jspdf";
 import "../styles/AllNotes.css";
-
 const NotesPage = () => {
   const [localNotes, setLocalNotes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // State for the search query
   const { user } = useUserStore();
   const navigate = useNavigate();
+
   useEffect(() => {
-    // Fetch local notes from localStorage
     const storedNotes = JSON.parse(localStorage.getItem("notes")) || [];
     setLocalNotes(storedNotes);
   }, []);
 
   const handleNoteClick = (offline_id) => {
-    // Navigate to the EditNotePage for this note
     navigate(`/edit/${offline_id}`);
   };
 
+  const handleDelete = (offline_id) => {
+    const updatedNotes = localNotes.filter(
+      (note) => note.offline_id !== offline_id
+    );
+    setLocalNotes(updatedNotes);
+    localStorage.setItem("notes", JSON.stringify(updatedNotes));
+    toast.success("Note deleted successfully!");
+  };
+
+  const handleDownload = (note) => {
+    const htmlContent = `
+  <div style="width:800px; padding: 20px; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+      <h1 style="text-align: center; font-size: 24px; margin-bottom: 20px; color: #444;">${note.title}</h1>
+      <div style="width:800px; font-size: 14px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; color: #555;">
+          ${note.content}
+      </div>
+  </div>`;
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px", // Use pixels for easier scaling
+      format: "a4", // Use A4 size
+    });
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    pdf.html(htmlContent, {
+      x: 10, // Padding from the left
+      y: 10, // Padding from the top
+      width: pageWidth - 20, // Make sure the content fits the page
+      windowWidth: 900, // Simulate a browser window width for rendering
+      callback: function (doc) {
+        doc.save(`${note.title || "Untitled Note"}.pdf`);
+      },
+    });
+
+    toast.success("Note downloaded as PDF!");
+  };
+// Filter notes based on the search query
+const filteredNotes = localNotes.filter((note) =>
+  note.title.toLowerCase().includes(searchQuery.toLowerCase())
+);
   return (
     <div>
-      <div>
+      <div id="html-preview"></div>
+      <div style={{ padding: "0 0vw" }}>
         <div className="note_header">
           <h2>Notes</h2>
           <div className="search-bar">
-            <input type="text" placeholder="Search your notes" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search your notes"
+            />
           </div>
           <div className="sort_by"></div>
         </div>
-        {localNotes.length === 0 && <p>No notes found.</p>}
-        {localNotes.map((note, idx) => (
+        {filteredNotes.length === 0 && <p style={{textAlign:'center', fontSize:"1.3rem"}}>No notes found.</p>}
+        {filteredNotes.map((note, idx) => (
           <div className="note_card" key={idx}>
             <div className="right_side">
               <h2>{note.title}</h2>
@@ -55,7 +102,7 @@ const NotesPage = () => {
                   />
                 </svg>
               </button>
-              <button>
+              <button onClick={() => handleDelete(note.offline_id)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -71,7 +118,7 @@ const NotesPage = () => {
                   />
                 </svg>
               </button>
-              <button>
+              <button onClick={() => handleDownload(note)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -91,17 +138,6 @@ const NotesPage = () => {
           </div>
         ))}
       </div>
-
-      {/* <div>
-        <h2>Online Notes</h2>
-        {onlineNotes.length === 0 && <p>No online notes found.</p>}
-        {onlineNotes.map((note, idx) => (
-          <div key={idx}>
-            <p>{note.title}</p>
-            <button onClick={() => handleNoteClick(note.offline_id)}>Edit</button>
-          </div>
-        ))}
-      </div> */}
     </div>
   );
 };

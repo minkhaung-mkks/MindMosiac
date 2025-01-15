@@ -160,7 +160,7 @@ const CommunityPage = () => {
         </Link>
         <div className="resource_card">
           <img
-            src="https://clearbehavioralhealth.com/wp-content/uploads/2024/09/depression-symptoms.jpg"
+            src="https://static.bandainamcoent.eu/high/dark-souls/dark-souls-3/00-page-setup/ds3_game-thumbnail.jpg"
             alt=""
           />
           <Link
