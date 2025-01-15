@@ -135,3 +135,11 @@ margin: 0;
     }
   }
   
+
+  .ActiveFilter{
+    background-color: rgb(108, 208, 108);
+  }
+
+  .ActiveFilter .filter_block{
+    background-color: black;
+  }
