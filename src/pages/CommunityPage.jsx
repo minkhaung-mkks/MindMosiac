@@ -38,6 +38,9 @@ const timeslots = [
   "1:00 - 2:00 PM",
   "2:00 - 3:00 PM",
   "3:00 - 4:00 PM",
+  "6:00 - 7:00 PM",
+  "7:00 - 8:00 PM",
+  "8:00 - 9:00 PM",
 ];
 const CommunityPage = () => {
   const [searchedSpecialities, setSearchedSpecialities] = useState([]);
