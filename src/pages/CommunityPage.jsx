@@ -31,6 +31,14 @@ const resources = [
     specialities: ["General"],
   },
 ];
+
+const timeslots = [
+  "9:00 - 10:00",
+  "10:00 - 11:00",
+  "1:00 - 2:00 PM",
+  "2:00 - 3:00 PM",
+  "3:00 - 4:00 PM",
+];
 const CommunityPage = () => {
   const [searchedSpecialities, setSearchedSpecialities] = useState([]);
 
@@ -42,6 +50,14 @@ const CommunityPage = () => {
     "General",
     "Addiction",
   ];
+  const [safeCards, setSafeCards] = useState([
+    "I feel bad about not doing my school work but can’t find motivation.",
+    "I do not feel loved by my parents.",
+    // "I do not feel attraction to anyone.",
+  ]);
+  const [showInput, setShowInput] = useState(false);
+  const [showTimeslot, setShowTimeslot] = useState(false);
+  const [newPost, setNewPost] = useState("");
 
   const toggleFilter = (filter) => {
     setSearchedSpecialities((prev) =>
@@ -57,23 +73,75 @@ const CommunityPage = () => {
       searchedSpecialities.includes(speciality)
     );
   });
+  const addSafeCard = () => {
+    if (newPost.trim()) {
+      setSafeCards([...safeCards, newPost.trim()]);
+      setNewPost("");
+      setShowInput(false);
+    }
+  };
+
+  const handleBooking = (time)=>{
+    setShowTimeslot(false)
+    alert(`You have booked the section at ${time}`)
+  }
   return (
     <div className="community_page">
       <div className="community_space">
         <div className="safe_space">
           <h3>The safe space</h3>
-          <div className="safe_cards">
-            <p>
-              I feel bad about not doing my school work but can’t find
-              motivation.
-            </p>
-          </div>
-          <div className="safe_cards">
-            <p>I do not feel loved by my parents.</p>
-          </div>
-          <div className="safe_cards">
-            <p>I do not feel attraction to anyone.</p>
-          </div>
+          <button className="add_btn" onClick={() => setShowInput(!showInput)}>
+            <svg
+              className="add_btn_svg"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+              />
+            </svg>
+          </button>
+          {showTimeslot && (
+            <div className="timeslot_box">
+              {timeslots.map((time) => (
+                <div
+                  onClick={() =>
+                    handleBooking(time)
+                  }
+                  className="timeslots"
+                >
+                  <p>{time}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          {showInput && (
+            <div className="safe_input">
+              <input
+                type="text"
+                placeholder="Share your thoughts..."
+                value={newPost}
+                onChange={(e) => setNewPost(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    addSafeCard();
+                  }
+                }}
+              />
+              <button onClick={addSafeCard}>Post</button>
+            </div>
+          )}
+
+          {safeCards.map((text, index) => (
+            <div className="safe_cards" key={index}>
+              <p>{text}</p>
+            </div>
+          ))}
         </div>
         <div className="suggestion_space mobile_only">
           <h3>Trending mental health resources</h3>
@@ -150,7 +218,11 @@ const CommunityPage = () => {
           </div>
           <div className="resources_box">
             {filteredResources.map((resource, index) => (
-              <div className="resource_card" key={index}>
+              <div
+                onClick={() => setShowTimeslot(!showTimeslot)}
+                className="resource_card"
+                key={index}
+              >
                 <img src={resource.img} alt={resource.name} />
                 <div className="resource_info">
                   <h2>{resource.name}</h2>

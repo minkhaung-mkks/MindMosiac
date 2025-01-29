@@ -1,6 +1,7 @@
 .community_page{
     display: flex;
     width: 92vw;
+
     padding: 2vh 4vw;
 }
 
@@ -79,6 +80,7 @@ margin: 0;
     display: flex;
     flex-direction: column;
     gap: 2vh;
+    position: relative;
 }
 
 .filter{
@@ -142,4 +144,79 @@ margin: 0;
 
   .ActiveFilter .filter_block{
     background-color: black;
+  }
+
+  .add_btn svg{
+    position: absolute;
+    right: 0;
+    top: 0%;
+    width: 42px;
+    height: 38px;
+    cursor: pointer;
+    stroke-width: 0.5;
+    fill: white;
+    stroke: black;
+  }
+  .add_btn{
+    position: absolute;
+    right: 0;
+    top: 5%;
+    width: 42px;
+    height: 38px;
+    cursor: pointer;
+    stroke-width: 0.5;
+    background-color: transparent;
+  }
+  .add_btn:hover{
+    outline: none;
+    border: none;
+  }
+  .add_btn svg:hover{
+    fill: black;
+    stroke: white;
+  }
+
+  .safe_input{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 50px;
+    width: 200px;
+    background-color: white;
+    border: 1px solid black;
+    gap: 20px;
+  }
+
+  .safe_input input{
+    padding: 10px;
+    background-color: white;
+    color: black;
+  }
+
+  .timeslot_box{
+    position: fixed;
+    height: 40vh;
+    width: 20vw;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    top: 30%;
+    left: 30%;
+    padding: 20px;
+    border: 1px solid black;
+    gap: 10px;
+  }
+
+  .timeslots{
+    border: 1px solid black;
+    padding: 0 20px;
+    cursor: pointer;
+  }
+  .timeslots:hover{
+    background-color: rgb(215, 215, 215);
   }
