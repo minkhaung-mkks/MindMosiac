@@ -60,7 +60,7 @@
 }
 
 .resource_card:hover{
-    background-color: black;
+    background-color: rgb(218, 218, 218);
     filter: brightness(0.8);
 }
 
