@@ -216,6 +216,7 @@ margin: 0;
     padding: 20px;
     border: 1px solid black;
     gap: 10px;
+    overflow: auto;
   }
 
   .timeslots{
