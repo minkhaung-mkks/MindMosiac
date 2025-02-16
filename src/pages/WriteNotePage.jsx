@@ -47,17 +47,19 @@ const WriteNotePage = () => {
       content,
       images, // Store images as base64 URLs
       editedAt: new Date().toISOString(),
-    }
-
+      writer: user?.name || "Unknown", // Added writer name here
+    };
+  
     // Get notes from localStorage and add the new note
-    const savedNotes = JSON.parse(localStorage.getItem('notes')) || []
-    savedNotes.push(newNote)
-    localStorage.setItem('notes', JSON.stringify(savedNotes))
-
+    const savedNotes = JSON.parse(localStorage.getItem("notes")) || [];
+    savedNotes.push(newNote);
+    localStorage.setItem("notes", JSON.stringify(savedNotes));
+  
     // Show success toast and navigate to the notes page
-    toast.success('Note saved locally!', { position: toast.POSITION.TOP_RIGHT })
-    navigate('/')
-  }
+    toast.success("Note saved locally!", { position: toast.POSITION.TOP_RIGHT });
+    navigate("/");
+  };
+  
 
   // Upload images to the backend and save the note
   const uploadImagesAndSaveNote = () => {

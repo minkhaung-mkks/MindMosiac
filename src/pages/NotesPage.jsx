@@ -1,14 +1,25 @@
+// src/pages/NotesPage.jsx
 import React, { useState, useEffect } from "react";
 import { useUserStore } from "../store";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { jsPDF } from "jspdf";
+import { QRCodeCanvas } from "qrcode.react";
+import CryptoJS from "crypto-js";
 import "../styles/AllNotes.css";
+
 const NotesPage = () => {
   const [localNotes, setLocalNotes] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(""); // State for the search query
+  const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUserStore();
   const navigate = useNavigate();
+
+  // Modal states
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [selectedNote, setSelectedNote] = useState(null);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [qrCodeData, setQrCodeData] = useState("");
+  const [showTrustedModal, setShowTrustedModal] = useState(false);
 
   useEffect(() => {
     const storedNotes = JSON.parse(localStorage.getItem("notes")) || [];
@@ -30,27 +41,32 @@ const NotesPage = () => {
 
   const handleDownload = (note) => {
     const htmlContent = `
-  <div style="width:800px; padding: 20px; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-      <h1 style="text-align: center; font-size: 24px; margin-bottom: 20px; color: #444;">${note.title}</h1>
-      <div style="width:800px; font-size: 14px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; color: #555;">
-          ${note.content}
+      <div style="width:800px; padding: 20px; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h1 style="text-align: center; font-size: 24px; margin-bottom: 20px; color: #444;">${
+            note.title
+          }</h1>
+          <div style="width:800px; font-size: 14px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; color: #555;">
+              ${note.content}
+          </div>
+          <p style="text-align: right; font-style: italic;">Written by: ${
+            note.writer || "Unknown"
+          }</p>
       </div>
-  </div>`;
+    `;
 
     const pdf = new jsPDF({
       orientation: "portrait",
-      unit: "px", // Use pixels for easier scaling
-      format: "a4", // Use A4 size
+      unit: "px",
+      format: "a4",
     });
 
     const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
 
     pdf.html(htmlContent, {
-      x: 10, // Padding from the left
-      y: 10, // Padding from the top
-      width: pageWidth - 20, // Make sure the content fits the page
-      windowWidth: 900, // Simulate a browser window width for rendering
+      x: 10,
+      y: 10,
+      width: pageWidth - 20,
+      windowWidth: 900,
       callback: function (doc) {
         doc.save(`${note.title || "Untitled Note"}.pdf`);
       },
@@ -58,10 +74,96 @@ const NotesPage = () => {
 
     toast.success("Note downloaded as PDF!");
   };
-// Filter notes based on the search query
-const filteredNotes = localNotes.filter((note) =>
-  note.title.toLowerCase().includes(searchQuery.toLowerCase())
-);
+
+  // Opens the share modal for the selected note
+  const handleShare = (note) => {
+    setSelectedNote(note);
+    setShowShareModal(true);
+  };
+
+  // Generates a QR code (using URL + encrypted payload) and shows it in a modal
+  const handleShareViaQR = (note) => {
+    const payload = {
+      allowed_ids: [], // Public sharing
+      note_title: note.title,
+      content: note.content,
+      by: note.writer || "Unknown",
+    };
+
+    const jsonData = JSON.stringify(payload);
+    // Encrypt the payload using a public key (for public sharing)
+    const encrypted = CryptoJS.AES.encrypt(jsonData, "public_key").toString();
+    const baseUrl = `${window.location.origin}/decrypt`;
+    const urlWithEncryptedData = `${baseUrl}?data=${encodeURIComponent(
+      encrypted
+    )}`;
+
+    setQrCodeData(urlWithEncryptedData);
+    setShowQRModal(true);
+    setShowShareModal(false);
+  };
+
+  // Shares the note link using the Web Share API or copies it to the clipboard
+  const handleShareToFriends = (note) => {
+    const payload = {
+      allowed_ids: [],
+      note_title: note.title,
+      content: note.content,
+      by: note.writer || "Unknown",
+    };
+
+    const jsonData = JSON.stringify(payload);
+    const encrypted = CryptoJS.AES.encrypt(jsonData, "public_key").toString();
+    const baseUrl = `${window.location.origin}/decrypt`;
+    const shareLink = `${baseUrl}?data=${encodeURIComponent(encrypted)}`;
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: note.title,
+          text: note.content,
+          url: shareLink,
+        })
+        .then(() => toast.success("Shared successfully!"))
+        .catch((error) => toast.error("Error sharing: " + error));
+    } else {
+      navigator.clipboard
+        .writeText(shareLink)
+        .then(() => toast.success("Link copied to clipboard!"))
+        .catch(() => toast.error("Failed to copy link"));
+    }
+    setShowShareModal(false);
+  };
+
+  // Opens the trusted share modal
+  const openTrustedModal = () => {
+    setShowTrustedModal(true);
+    setShowShareModal(false);
+  };
+
+  // Handle sending to a trusted contact (friend or group)
+  const handleTrustedSend = (name) => {
+    toast.success(`Shared to ${name}!`);
+    // You could add further integration logic here
+  };
+
+  // QR Modal "Save" button action (example: simply show a toast and close)
+  const handleSaveQR = () => {
+    toast.success("QR code saved!");
+    setShowQRModal(false);
+    setQrCodeData("");
+  };
+
+  const closeQRModal = () => {
+    setShowQRModal(false);
+    setQrCodeData("");
+  };
+
+  // Filter notes based on the search query
+  const filteredNotes = localNotes.filter((note) =>
+    note.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <div id="html-preview"></div>
@@ -78,7 +180,11 @@ const filteredNotes = localNotes.filter((note) =>
           </div>
           <div className="sort_by"></div>
         </div>
-        {filteredNotes.length === 0 && <p style={{textAlign:'center', fontSize:"1.3rem"}}>No notes found.</p>}
+        {filteredNotes.length === 0 && (
+          <p style={{ textAlign: "center", fontSize: "1.3rem" }}>
+            No notes found.
+          </p>
+        )}
         {filteredNotes.map((note, idx) => (
           <div className="note_card" key={idx}>
             <div className="right_side">
@@ -87,6 +193,7 @@ const filteredNotes = localNotes.filter((note) =>
             </div>
             <div className="buttons_side">
               <button onClick={() => handleNoteClick(note.offline_id)}>
+                {/* Edit Icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -98,11 +205,12 @@ const filteredNotes = localNotes.filter((note) =>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Z"
                   />
                 </svg>
               </button>
               <button onClick={() => handleDelete(note.offline_id)}>
+                {/* Delete Icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -118,7 +226,8 @@ const filteredNotes = localNotes.filter((note) =>
                   />
                 </svg>
               </button>
-              <button onClick={() => handleDownload(note)}>
+              <button onClick={() => handleShare(note)}>
+                {/* Share Icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -130,7 +239,7 @@ const filteredNotes = localNotes.filter((note) =>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                    d="M15 8a3 3 0 1 0-2.83-4H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7.17A3 3 0 1 0 15 16"
                   />
                 </svg>
               </button>
@@ -138,6 +247,84 @@ const filteredNotes = localNotes.filter((note) =>
           </div>
         ))}
       </div>
+
+      {/* Share Options Modal */}
+      {showShareModal && selectedNote && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Share Note</h3>
+            <button onClick={() => handleShareViaQR(selectedNote)}>
+              Share via QR
+            </button>
+            <button onClick={() => handleShareToFriends(selectedNote)}>
+              Share to Friends
+            </button>
+            <button onClick={() => openTrustedModal()}>
+              Share to Trusted
+            </button>
+            <button onClick={() => handleDownload(selectedNote)}>
+              Download
+            </button>
+            <button onClick={() => setShowShareModal(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* Trusted Share Modal */}
+      {showTrustedModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Share to Trusted Contacts</h3>
+            <div>
+              <h4>Friends</h4>
+              {user && user.friends && user.friends.length > 0 ? (
+                user.friends.map((friend) => (
+                  <div key={friend} className="trusted-item">
+                    <span>{friend}</span>
+                    <button onClick={() => handleTrustedSend(friend)}>
+                      Send
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p>No friends available</p>
+              )}
+            </div>
+            <div>
+              <h4>Groups</h4>
+              {user && user.groups && user.groups.length > 0 ? (
+                user.groups.map((group) => (
+                  <div key={group.groupName} className="trusted-item">
+                    <span>{group.groupName}</span>
+                    <button
+                      onClick={() => handleTrustedSend(group.groupName)}
+                    >
+                      Send
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p>No groups available</p>
+              )}
+            </div>
+            <button onClick={() => setShowTrustedModal(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* QR Code Modal */}
+      {showQRModal && qrCodeData && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>QR Code</h3>
+            <QRCodeCanvas value={qrCodeData} size={256} />
+            <div className="qr-buttons">
+              <button onClick={handleSaveQR}>Save</button>
+              <button onClick={closeQRModal}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

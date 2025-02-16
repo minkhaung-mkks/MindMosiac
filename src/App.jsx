@@ -18,6 +18,7 @@ import LoginPage from "./pages/LoginPage";
 import Layout from "./components/Layout";
 import { Outlet } from "react-router";
 import CommunityPage from "./pages/CommunityPage";
+import Calendar from "./pages/Calendar";
 function App() {
   return (
     <Router>
@@ -62,6 +63,14 @@ function App() {
             element={
               <Layout>
                 <ProfilePage />
+              </Layout>
+            }
+          />
+          <Route
+            path="/calendar"
+            element={
+              <Layout>
+                <Calendar />
               </Layout>
             }
           />

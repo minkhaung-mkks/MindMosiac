@@ -58,7 +58,7 @@ const Layout = ({ children }) => {
               />
             </svg>
           </Link>
-          <Link to={"/"} className={"locked-link"}>
+          <Link to={"/calendar"} className={""}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

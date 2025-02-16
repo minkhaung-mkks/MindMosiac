@@ -30,6 +30,8 @@ align-items: center;
 }
 
 .nav_bar_bottom a svg {
+  width: 100%;
+  height: auto;
   stroke: black;
   stroke-width: 0.5;
 }
@@ -59,10 +61,11 @@ align-items: center;
 
 .header_nav_bar a {
   width: 40px;
-
 }
 
 .header_nav_bar a svg {
+  width: 100%;
+  height: auto;
   stroke: black;
   stroke-width: 0.5;
 }
