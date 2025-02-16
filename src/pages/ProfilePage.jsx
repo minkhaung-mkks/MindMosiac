@@ -45,6 +45,12 @@ const ProfilePage = () => {
     }
   }, [user, user_id, navigate]);
 
+  // Helper function to update user data in both Zustand store and localStorage
+  const updateUserStorage = (updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem("user-storage", JSON.stringify(updatedUser));
+  };
+
   const handleSave = () => {
     if (!nickname) {
       toast.error("Nickname is required.", {
@@ -60,22 +66,11 @@ const ProfilePage = () => {
       friends,
       groups,
     };
-    setUser(updatedUser);
-    localStorage.setItem("user-storage", JSON.stringify(updatedUser));
+    updateUserStorage(updatedUser);
     // Optionally update the backend
-    axios
-      .put(`http://localhost:5000/user/${user.id}`, updatedUser)
-      .then(() => {
-        toast.success("Profile updated successfully!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      })
-      .catch((error) => {
-        console.error("Error updating profile:", error);
-        toast.error("Error updating profile.", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      });
+    toast.success("Profile updated successfully!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
   };
 
   const handleAddFriend = () => {
@@ -95,6 +90,9 @@ const ProfilePage = () => {
     }
     const updatedFriends = [...friends, friendInput.trim()];
     setFriends(updatedFriends);
+    // Update user object immediately
+    const updatedUser = { ...user, friends: updatedFriends };
+    updateUserStorage(updatedUser);
     toast.success("Friend added!", {
       position: toast.POSITION.TOP_RIGHT,
     });
@@ -115,6 +113,9 @@ const ProfilePage = () => {
     };
     const updatedGroups = [...groups, newGroup];
     setGroups(updatedGroups);
+    // Update user object immediately
+    const updatedUser = { ...user, groups: updatedGroups };
+    updateUserStorage(updatedUser);
     toast.success("Group created!", {
       position: toast.POSITION.TOP_RIGHT,
     });
@@ -144,6 +145,9 @@ const ProfilePage = () => {
     }
     group.members.push(groupMemberInput.trim());
     setGroups(updatedGroups);
+    // Update user object immediately
+    const updatedUser = { ...user, groups: updatedGroups };
+    updateUserStorage(updatedUser);
     toast.success("Friend added to group!", {
       position: toast.POSITION.TOP_RIGHT,
     });
@@ -231,7 +235,7 @@ const ProfilePage = () => {
       </div>
       <div className="line"></div>
       <h3>Groups</h3>
-      <div className="group_create_box">
+      <div className="friend_add_box">
         <input
           type="text"
           placeholder="Enter new group name"
@@ -240,6 +244,8 @@ const ProfilePage = () => {
         />
         <button onClick={handleCreateGroup}>Create Group</button>
       </div>
+
+      <div className="line"></div>
       <div className="group_add_box">
         <input
           type="text"
@@ -248,6 +254,7 @@ const ProfilePage = () => {
           onChange={(e) => setGroupMemberInput(e.target.value)}
         />
       </div>
+      <div className="line"></div>
       {groups.length > 0 ? (
         groups.map((group, index) => (
           <div className="group_box" key={index}>

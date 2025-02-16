@@ -90,3 +90,27 @@
     margin-left: 0;
   }
 }
+
+
+.modal-overlay{
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.241);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: white;
+  padding: 10px 30px;
+  padding-bottom: 50px;
+  border-radius: 10px;
+}

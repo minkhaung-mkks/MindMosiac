@@ -14,6 +14,7 @@
 .friends_box{
     display: flex;
     margin-top: 10px;
+    gap: 20px;
 }
 
 .friend_bubble{
@@ -58,4 +59,44 @@
     outline: none;
     color: black;
     margin-top: 10px;
+}
+
+.friend_add_box{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.friend_add_box input{
+    width: 60%;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+}
+
+.friend_add_box input:hover, .friend_add_box input:focus-within, .friend_add_box input:focus-visible{
+    border: 1px solid black;;
+    border-radius: none;
+    outline: none;
+}
+
+.group_add_box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.group_add_box input{
+    width: 60%;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+}
+
+.group_add_box input:hover, .group_add_box input:focus-within, .group_add_box input:focus-visible{
+    border: 1px solid black;;
+    border-radius: none;
+    outline: none;
 }

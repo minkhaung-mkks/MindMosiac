@@ -137,7 +137,7 @@ const EditNotePage = () => {
                 [{ header: '1' }, { header: '2' }, { font: [] }],
                 [{ list: 'ordered' }, { list: 'bullet' }],
                 ['bold', 'italic', 'underline'],
-                ['link', 'image'], // Allow image insert in the toolbar
+                ['link',], // Allow image insert in the toolbar
               ],
             }}
             formats={[

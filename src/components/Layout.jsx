@@ -58,7 +58,7 @@ const Layout = ({ children }) => {
               />
             </svg>
           </Link>
-          <Link to={"/calendar"} className={""}>
+          <Link to={"/calendar"} className={isActive("/calendar")}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

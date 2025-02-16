@@ -1,11 +1,12 @@
 // src/pages/NotesPage.jsx
 import React, { useState, useEffect } from "react";
 import { useUserStore } from "../store";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { jsPDF } from "jspdf";
 import { QRCodeCanvas } from "qrcode.react";
 import CryptoJS from "crypto-js";
+import LZString from "lz-string";
 import "../styles/AllNotes.css";
 
 const NotesPage = () => {
@@ -13,18 +14,42 @@ const NotesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useUserStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Modal states
+  // Modal states for sharing
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
   const [showQRModal, setShowQRModal] = useState(false);
   const [qrCodeData, setQrCodeData] = useState("");
   const [showTrustedModal, setShowTrustedModal] = useState(false);
 
+  // Decrypted data state (if URL contains encrypted data)
+  const [decryptedData, setDecryptedData] = useState(null);
+
+  // Load notes from localStorage on mount
   useEffect(() => {
     const storedNotes = JSON.parse(localStorage.getItem("notes")) || [];
     setLocalNotes(storedNotes);
   }, []);
+
+  // If URL contains a "data" query parameter, attempt decryption
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const encrypted = query.get("data");
+    if (encrypted) {
+      try {
+        const bytes = CryptoJS.AES.decrypt(encrypted, "public_key");
+        const compressedData = bytes.toString(CryptoJS.enc.Utf8);
+        const originalText = LZString.decompressFromBase64(compressedData);
+        const jsonData = JSON.parse(originalText);
+        handleSaveDecryptedNote(jsonData);
+      } catch (error) {
+        toast.error("Decryption failed. Please check the data.", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+    }
+  }, [location.search]);
 
   const handleNoteClick = (offline_id) => {
     navigate(`/edit/${offline_id}`);
@@ -81,18 +106,19 @@ const NotesPage = () => {
     setShowShareModal(true);
   };
 
-  // Generates a QR code (using URL + encrypted payload) and shows it in a modal
+  // Generates a QR code with the encrypted payload (using LZ-String compression)
   const handleShareViaQR = (note) => {
     const payload = {
       allowed_ids: [], // Public sharing
-      note_title: note.title,
+      title: note.title,
       content: note.content,
       by: note.writer || "Unknown",
     };
 
     const jsonData = JSON.stringify(payload);
     // Encrypt the payload using a public key (for public sharing)
-    const encrypted = CryptoJS.AES.encrypt(jsonData, "public_key").toString();
+    const compressedData = LZString.compressToBase64(jsonData);
+    const encrypted = CryptoJS.AES.encrypt(compressedData, "public_key").toString();
     const baseUrl = `${window.location.origin}/decrypt`;
     const urlWithEncryptedData = `${baseUrl}?data=${encodeURIComponent(
       encrypted
@@ -103,37 +129,31 @@ const NotesPage = () => {
     setShowShareModal(false);
   };
 
-  // Shares the note link using the Web Share API or copies it to the clipboard
+  // Shares the note link via the Web Share API or clipboard
   const handleShareToFriends = (note) => {
     const payload = {
       allowed_ids: [],
-      note_title: note.title,
+      title: note.title,
       content: note.content,
       by: note.writer || "Unknown",
     };
-
+  
     const jsonData = JSON.stringify(payload);
-    const encrypted = CryptoJS.AES.encrypt(jsonData, "public_key").toString();
-    const baseUrl = `${window.location.origin}/decrypt`;
+    const compressedData = LZString.compressToBase64(jsonData);
+    const encrypted = CryptoJS.AES.encrypt(compressedData, "public_key").toString();
+    const baseUrl = `${window.location.origin}/`;
     const shareLink = `${baseUrl}?data=${encodeURIComponent(encrypted)}`;
-
-    if (navigator.share) {
-      navigator
-        .share({
-          title: note.title,
-          text: note.content,
-          url: shareLink,
-        })
-        .then(() => toast.success("Shared successfully!"))
-        .catch((error) => toast.error("Error sharing: " + error));
-    } else {
-      navigator.clipboard
-        .writeText(shareLink)
-        .then(() => toast.success("Link copied to clipboard!"))
-        .catch(() => toast.error("Failed to copy link"));
-    }
+  
+    // Copy the link to clipboard
+    navigator.clipboard
+      .writeText(shareLink)
+      .then(() => toast.success("Link copied to clipboard!"))
+      .catch(() => toast.error("Failed to copy link"));
+  
     setShowShareModal(false);
   };
+  
+  
 
   // Opens the trusted share modal
   const openTrustedModal = () => {
@@ -144,10 +164,10 @@ const NotesPage = () => {
   // Handle sending to a trusted contact (friend or group)
   const handleTrustedSend = (name) => {
     toast.success(`Shared to ${name}!`);
-    // You could add further integration logic here
+    // Additional integration logic can be added here.
   };
 
-  // QR Modal "Save" button action (example: simply show a toast and close)
+  // QR Modal "Save" action
   const handleSaveQR = () => {
     toast.success("QR code saved!");
     setShowQRModal(false);
@@ -159,13 +179,40 @@ const NotesPage = () => {
     setQrCodeData("");
   };
 
+  // Save the decrypted note into local storage
+  const handleSaveDecryptedNote = (decryptedData) => {
+    if (decryptedData) {
+      const notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+      notes.push(decryptedData);
+      localStorage.setItem("notes", JSON.stringify(notes));
+      toast.success("Note added to local storage!");
+      // Clear decrypted data from the URL by navigating without query parameters
+      navigate("/", { replace: true });
+      setDecryptedData(null);
+    }
+  };
+
   // Filter notes based on the search query
   const filteredNotes = localNotes.filter((note) =>
-    note.title.toLowerCase().includes(searchQuery.toLowerCase())
+    (note?.title || note?.note_title).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div>
+      {/* Section to display decrypted note if URL contains encrypted data */}
+      {decryptedData && (
+        <div className="decrypt-section">
+          <h2>Decrypted Note</h2>
+          <h3>{decryptedData.note_title}</h3>
+          <p>{decryptedData.content}</p>
+          <p>
+            <em>Written by: {decryptedData.by}</em>
+          </p>
+          <button onClick={handleSaveDecryptedNote}>Save Note</button>
+        </div>
+      )}
+
       <div id="html-preview"></div>
       <div style={{ padding: "0 0vw" }}>
         <div className="note_header">
@@ -257,10 +304,10 @@ const NotesPage = () => {
               Share via QR
             </button>
             <button onClick={() => handleShareToFriends(selectedNote)}>
-              Share to Friends
+              Share via link
             </button>
             <button onClick={() => openTrustedModal()}>
-              Share to Trusted
+              Share to Friends
             </button>
             <button onClick={() => handleDownload(selectedNote)}>
               Download
@@ -296,9 +343,7 @@ const NotesPage = () => {
                 user.groups.map((group) => (
                   <div key={group.groupName} className="trusted-item">
                     <span>{group.groupName}</span>
-                    <button
-                      onClick={() => handleTrustedSend(group.groupName)}
-                    >
+                    <button onClick={() => handleTrustedSend(group.groupName)}>
                       Send
                     </button>
                   </div>

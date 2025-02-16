@@ -227,3 +227,11 @@ margin: 0;
   .timeslots:hover{
     background-color: rgb(215, 215, 215);
   }
+
+  .modal-content input, .modal-content select{
+    background-color: white;
+    color: black;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0px;
+  }
